@@ -16,16 +16,31 @@ function App() {
     }]);
   };
 
-  const handleSendMessage = async (text) => {
+const handleSendMessage = async (text) => {
+    // 1. Messaggio Utente immediato
     const userMsg = { sender: 'user', text };
-    setMessages(prev => [...prev, userMsg]);
+    
+    // Aggiorniamo lo stato locale immediatamente
+    const newMessages = [...messages, userMsg];
+    setMessages(newMessages); 
     setIsLoading(true);
+
+    // 2. Prepariamo la History da inviare al backend
+    // Dobbiamo convertire il formato interno {sender: 'user'} 
+    // nel formato API {role: 'user', content: '...'}
+    const historyPayload = messages.map(msg => ({
+      role: msg.sender === 'user' ? 'user' : 'assistant',
+      content: msg.text
+    }));
 
     try {
       const response = await fetch('http://localhost:8000/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: text }),
+        body: JSON.stringify({ 
+          question: text,
+          history: historyPayload // <--- ECCO LA NOVITÀ
+        }),
       });
 
       const data = await response.json();
@@ -36,6 +51,7 @@ function App() {
         sources: data.sources 
       }]);
     } catch (error) {
+      console.error(error);
       setMessages(prev => [...prev, { sender: 'bot', text: 'Errore di connessione.' }]);
     } finally {
       setIsLoading(false);
