@@ -103,7 +103,11 @@ async def chat_endpoint(request: ChatRequest):
         else:
             return ChatResponse(answer="Please load a PDF first!", sources=[])
 
-    llm = ChatOllama(model="llama3", temperature=0)
+    ollama_url = os.getenv("OLLAMA_BASE_URL","http://localhost:11434")
+
+    llm = ChatOllama(model="llama3", ## phi3 is faster
+                     temperature=0,
+                     base_url = ollama_url) 
     
     chat_history = []
     for msg in request.history:
