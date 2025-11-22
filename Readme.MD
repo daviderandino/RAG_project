@@ -1,4 +1,4 @@
-# 🧠 Local RAG Assistant: Privacy-First Document Analysis
+# 🧠 Privacy-First RAG Knowledge Assistant
 
 ## 📋 Executive Summary
 
